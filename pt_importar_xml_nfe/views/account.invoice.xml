@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="account_invoice_importar_xml_nfe_view_form" model="ir.ui.view">
+        <field name="name">importar.xml.nfe.form</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.invoice_supplier_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_invoice_draft']" position="before">
+                <button attrs="{'invisible':['|',('state','!=','draft'),('dados_xml','!=',False)]}" name="action_importar_xml_nfe" type="object" string="Importar XML" groups="account.group_account_invoice" class="oe_edit_only"/>
+            </xpath>
+            <xpath expr="//button[@name='action_invoice_draft']" position="before">
+                <button attrs="{'invisible':['|',('dados_xml','=',False),('state','!=','draft')]}" name="action_excluir_xml" type="object" string="Excluir XML" groups="account.group_account_invoice" class="oe_edit_only oe_highlight"/>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="before">
+                <field name="dados_xml" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='reference']" position="replace">
+              <field name="reference" attrs="{'readonly':[('dados_xml','!=',False)]}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

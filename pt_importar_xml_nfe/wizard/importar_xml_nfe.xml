@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <record id="importar_xml_nfe_view_form" model="ir.ui.view">
+            <field name="name">importar.xml.nfe.form</field>
+            <field name="model">importar.xml.nfe</field>
+            <field name="arch" type="xml">
+                <form string="Importar dados do XML da NFe">
+                    <group class="oe_title">
+                        <field name="xml" required="1"/>
+                        <field name="importar_empresa_dif" attrs="{'invisible':[('xml','=',False)]}"/>
+                        <field name="invoice_id" invisible="1"/>
+                        <field name="account_id" required="1" domain="[('deprecated','=',False)]"/>
+                        <field name="posicao_fiscal"/>
+                        <p attrs="{'invisible':[('posicao_fiscal','=',False)]}" style="color:red">
+                          A posição fiscal será aplicada a TODOS os produtos importados.
+                          A posição fiscal só será aplicada caso os seja marcada a opção
+                          Criar Produtos Automaticamente
+                        </p>
+                        <field name="account_analytic_id" />
+                        <field name="criar_fornecedor" />
+                        <p attrs="{'invisible':[('criar_fornecedor','=',False)]}">
+                          O fornecedor será criado automaticamente e vinculado à Fatura.
+                          Você poderá alterá-lo manualmente após importá-lo, inclusive excluí-lo da Fatura.
+                        </p>
+                        <field name="fornecedor_como_cliente" attrs="{'invisible':[('criar_fornecedor','=',False)]}"/>
+                        <field name="criar_transportadora" />
+                        <field name="criar_produtos" />
+                        <p attrs="{'invisible':[('criar_produtos','=',False)]}">
+                          Os produtos serão criados automaticamente com base nos dados da Nota Fiscal
+                          e acrescentados automaticamente na fatura.
+                          Você poderá alterá-los manualmente após importá-los, inclusive excluí-los da Fatura.
+                          O fornecedor será vinculado ao produto para consultas futuras.
+                        </p>
+                        <field name="atualizar_produtos" attrs="{'invisible':[('criar_produtos','=',False)]}"/>
+                        <p attrs="{'invisible':[('atualizar_produtos','=',False)]}" >
+                          Os produtos serão atualizados automaticamente com base nos dados desta Nota fiscal
+                          caso eles já estejam cadastrados no sistema. Útil para registrar mudanças de
+                          valores no Fornecedor.
+                        </p>
+                    </group>
+                    <footer>
+                        <button name="importar_xml_button" string="Importar" type="object" class="btn-primary"/>
+                        <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

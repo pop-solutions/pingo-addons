@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="account_invoice_line_fixed_discount_form" model="ir.ui.view">
+        <field name="name">fixed.discount.importar.xml.nfe.form</field>
+        <field name="model">account.invoice.line</field>
+        <field name="inherit_id" ref="br_account.view_br_account_invoice_line_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='discount']" position="before">
+                <field name="discount_fixed" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="account_invoice_line_fixed_discount_tree" model="ir.ui.view">
+        <field name="name">fixed.discount.importar.xml.nfe.tree</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.invoice_supplier_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='invoice_line_ids']/tree//field[@name='discount']" position="after">
+                <field name="discount_fixed" />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
