@@ -20,7 +20,7 @@
     # for the full list
     'category': 'Accounting & Finance',
     'version': '11.0.1',
-    'licence':'LGPL-3',
+    'licence':'AGPL-3,',
 
     # any module necessary for this one to work correctly
     'depends': ['base',
