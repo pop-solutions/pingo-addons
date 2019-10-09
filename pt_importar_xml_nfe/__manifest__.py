@@ -40,4 +40,6 @@
         'wizard/importar_xml_nfe.xml',
     ],
     'installable': True,
+    'application': False,
+    'auto_install': False,
 }
