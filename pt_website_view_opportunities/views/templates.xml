@@ -1,0 +1,134 @@
+<odoo>
+
+  <template id="portal_my_home_menu_opportunity" name="Portal layout : opportunity menu entries" inherit_id="portal.portal_breadcrumbs" priority="20">
+      <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+          <li t-if="opportunity" class="breadcrumb-item #{'active ' if opportunity else ''}">
+              <a t-if="opportunity" t-attf-href="/my/opportunities?{{ keep_query() }}">Opportunities</a>
+          </li>
+          <li t-if="opportunity" class="breadcrumb-item active">
+              <span t-field="opportunity.name"/>
+          </li>
+      </xpath>
+  </template>
+
+  <template id="portal_my_home_opportunities" name="Portal My Home : opportunities entries" inherit_id="portal.portal_my_home" priority="20">
+      <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+          <t t-if="opportunities_count" t-call="portal.portal_docs_entry">
+              <t t-set="title">Opportunities</t>
+              <t t-set="url" t-value="'/my/opportunities'"/>
+              <t t-set="count" t-value="opportunities_count"/>
+          </t>
+      </xpath>
+  </template>
+
+  <template id="portal_my_opportunities" name="My Opportunities">
+      <t t-call="portal.portal_layout">
+          <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+          <t t-call="portal.portal_searchbar">
+              <t t-set="title">Opportunities</t>
+          </t>
+          <t t-if="not opportunities">
+              <p>Atualmente não há oportunidades para sua conta.</p>
+          </t>
+          <t t-if="opportunities" t-call="portal.portal_table">
+              <thead>
+                  <tr class="active">
+                      <th>Opportunity #</th>
+                      <th class="text-right">Date Open</th>
+                      <th class="text-right">Salesperson</th>
+                      <th class="text-right">Sales Team</th>
+                      <th class="text-center">Partner</th>
+                      <th class="text-center">Stage</th>
+                      <th class="text-right">Planned Revenue</th>
+                  </tr>
+              </thead>
+              <t t-foreach="opportunities" t-as="opportunity">
+                  <tr>
+                      <td><a t-att-href="'/my/opportunities/' + str(opportunity.id)"><t t-esc="opportunity.name"/></a></td>
+                      <td class="text-right"><span t-field="opportunity.date_open"/></td>
+                      <td class="text-right"><span t-field="opportunity.user_id.name"/></td>
+                      <td class="text-center"><span t-field="opportunity.team_id.name"/></td>
+                      <td class="text-center"><span t-field="opportunity.partner_id.name"/></td>
+                      <th class="text-center"><span t-field="opportunity.stage_id.name"/></th>
+                      <td class="text-right"><span t-field="opportunity.planned_revenue"/></td>
+                  </tr>
+              </t>
+          </t>
+      </t>
+  </template>
+
+  <template id="portal_my_opportunity" name="My Opportunity">
+      <t t-call="portal.portal_layout">
+          <t t-call="portal.portal_record_layout">
+              <t t-set="card_header">
+                  <h5 class="mb-0">
+                      <small class="text-muted">Opportunity - </small><span t-field="opportunity.name"/>
+                  </h5>
+              </t>
+              <t t-set="card_body">
+                  <div class="row">
+                      <div t-if="opportunity.partner_id" class="col-12 col-md-6 mb-2 mb-md-0">
+                          <h6>Customer Informations</h6>
+                          <div class="row">
+                              <div class="col flex-grow-0 pr-3">
+                                  <img t-if="opportunity.partner_id.image" class="rounded-circle mt-1 o_portal_contact_img" t-att-src="image_data_uri(opportunity.partner_id.image)" alt="Contact"/>
+                                  <img t-else="" class="rounded-circle mt-1 o_portal_contact_img" src="/web/static/src/img/user_menu_avatar.png" alt="Contact"/>
+                              </div>
+                              <div class="col pl-sm-0">
+                                  <address t-field="opportunity.partner_id" t-options='{"widget": "contact", "fields": ["street","name", "email", "phone"]}'/>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="col-12 col-md-6">
+                          <h6>Opportunity Informations</h6>
+                          <div class="row">
+                              <div class="col pl-sm-0 ml-4">
+                                  <strong>Title:</strong> <span t-field="opportunity.name" /><br/>
+                                  <strong>Salesperson:</strong> <span t-field="opportunity.user_id.name" /><br/>
+                                  <strong>Sales Team:</strong> <span t-field="opportunity.team_id.name" /><br/>
+                                  <strong>Stage:</strong> <span t-field="opportunity.stage_id.name" /><br/>
+                                  <strong>Planned Revenue:</strong> <span t-field="opportunity.planned_revenue" /><br/>
+                                  <strong>Status:</strong> <span t-if="opportunity.lost_reason and opportunity.active == False" t-esc="'Lost'" style="color:red"/>
+                                                           <span t-if="not opportunity.lost_reason and opportunity.probability != 100" t-esc="'In Negociation'" style="color:blue"/>
+                                                           <span t-if="opportunity.probability == 100 and opportunity.active" t-esc="'Won'" style="color:green"/><br/>
+                                  <t t-if="opportunity.lost_reason">
+                                    <strong>Lost Reason:</strong> <span t-field="opportunity.lost_reason" style="color:red"/><br/>
+                                  </t>
+                                  <strong>Date Open:</strong> <span t-field="opportunity.date_open" /><br/>
+                                  <strong t-if="opportunity.date_deadline">Date Deadline:</strong> <span t-field="opportunity.date_deadline" /><br/>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  <t t-if="attachments">
+                    <h6>Opportunity Attachments:</h6>
+                    <t t-foreach="attachments" t-as="attachment">
+                      <h6><a t-att-href="attachment.website_url"><span t-esc="attachment.display_name"/></a></h6>
+                    </t>
+                  </t>
+              </t>
+          </t>
+          <div class="card mt-0 border-top-0 rounded-0 rounded-bottom" style="margin-top:30px;">
+            <form action="/opportunity/uploaded" method="post" class="s_website_form form-horizontal container-fluid mt32" enctype="multipart/form-data" id="file_upload_form">
+                <div t-attf-class="form-group">
+                    <div class="col-md-7 col-sm-8">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <input type="hidden" name="opportunity_id" t-att-value="opportunity.id"/>
+                        <input type="file" name="attachment" class="form-control o_website_form_input" data-show-upload="true" data-show-caption="true" lass="file" data-show-preview="true" id="opportunity.id" required="true"/><br/>
+                        <button type="submit" name="Upload" style="margin-top:20px;" class="o_portal_chatter_composer_btn btn btn-primary mt8 o_website_message_post_helper">
+                            Send File
+                        </button>
+                    </div>
+                </div>
+            </form>
+          </div>
+          <div class="mt32">
+              <h4><strong>Communication History</strong></h4>
+              <t t-call="portal.message_thread">
+                  <t t-set="object" t-value="opportunity"/>
+              </t>
+          </div>
+      </t>
+  </template>
+</odoo>
