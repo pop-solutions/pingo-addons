@@ -29,7 +29,7 @@ attachment portal
 attachment
 attachment opportunity
     """,
-    'price': 59.0,
+    'price': 39.0,
     'currency': 'EUR',
     'author': "Pingo Tecnologia",
     'support': 'contato@pingotecnologia.com.br',
