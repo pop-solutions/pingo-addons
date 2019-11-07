@@ -35,7 +35,7 @@ attachment opportunity
     'support': 'contato@pingotecnologia.com.br',
     'images': ['static/description/capa.jpg'],
     'website': "http://www.pingotecnologia.com",
-
+    'licence':'OPL',
     'author': "Pingo Tecnologia",
     'website': "http://www.pingotecnologia.com",
 
