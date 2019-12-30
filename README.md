@@ -1,1 +1,1 @@
-Módulos Odoo Privados Pingo Tecnologia
+Módulos Odoo Pingo Tecnologia
