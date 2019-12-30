@@ -6,15 +6,15 @@
         Preencha automaticamente uma fatura de fornecedor baseado nos dados
         do XML da Nota Fiscal recebida.""",
     'description': """
-    xml
-    import
-    brazil
-    brasil
-    importar xml
-    importação de xml
-    nota fiscal
-    NFE
-    NFSE
+        xml
+        import
+        brazil
+        brasil
+        importar xml
+        importação de xml
+        nota fiscal
+        NFE
+        NFSE
     """,
     'author': "Pingo Tecnologia",
     'support': 'contato@pingotecnologia.com.br',
