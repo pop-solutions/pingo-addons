@@ -11,7 +11,7 @@
                         <field name="importar_empresa_dif" attrs="{'invisible':[('xml','=',False)]}"/>
                         <field name="invoice_id" invisible="1"/>
                         <field name="account_id" required="1" domain="[('deprecated','=',False)]"/>
-                        <field name="posicao_fiscal"/>
+                        <field name="posicao_fiscal" domain="[('fiscal_type','=','entrada')]"/>
                         <p attrs="{'invisible':[('posicao_fiscal','=',False)]}" style="color:red">
                           A posição fiscal será aplicada a TODOS os produtos importados.
                           A posição fiscal só será aplicada caso os seja marcada a opção
