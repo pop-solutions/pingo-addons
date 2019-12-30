@@ -36,7 +36,6 @@
     'data': [
         # 'security/ir.model.access.csv',
         'views/account.invoice.xml',
-        'views/account_invoice_line.xml',
         'wizard/importar_xml_nfe.xml',
     ],
     'installable': True,
