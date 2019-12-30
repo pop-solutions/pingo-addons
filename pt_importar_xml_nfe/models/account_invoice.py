@@ -38,7 +38,7 @@ class AccountInvoice(models.Model):
 
     criar_transportadora = fields.Boolean(
         string="Importar/Criar Transportadora Automaticamente",
-        help="Irá criar automaticamente um fornecedor com base nos dados da fatura")
+        help="Caso exista no XML, criará automaticamente uma transportadora com base nos dados importados")
 
     fornecedor_como_cliente = fields.Boolean(
         string="Marcar Fornecedor como Cliente",
@@ -282,8 +282,7 @@ class AccountInvoice(models.Model):
                         ),
                         "tributos_estimados": produto.imposto.vTotTrib,
                         "quantity": produto.prod.qCom,
-                        "price_unit": round(float(produto.prod.vUnCom if produto.prod.indTot == '1' else 0.0),2),
-                        "discount_fixed":round(float(produto.prod.vDesc if produto.prod.vDesc else 0.0),2),
+                        "price_unit": round(float(produto.prod.vUnCom if produto.prod.indTot == '1' else 0.0),2) - (round(float(produto.prod.vDesc if produto.prod.vDesc else 0.0),2) / float(produto.prod.qCom)),
                         "account_id": self.conta_produto_id.id,
                         "fiscal_classification_id": ncm_produto(),
                         "account_analytic_id": self.account_analytic_id,
@@ -292,81 +291,3 @@ class AccountInvoice(models.Model):
                     super()._compute_amount()
                     self.invoice_line_ids[index]._compute_price()
                     self.fiscal_position_id = self.posicao_fiscal if self.posicao_fiscal else self.fiscal_position_id
-
-    ##############################################################################################
-    # DESCONTO FIXO NA LINHA DA fatura
-    ##############################################################################################
-
-
-    @api.multi
-    def get_taxes_values(self):
-        self.ensure_one()
-        vals = {}
-        for line in self.invoice_line_ids.filtered('discount_fixed'):
-            vals[line] = {
-                # 'price_unit': line.price_unit,
-                # 'discount_fixed': line.discount_fixed,
-                'price_subtotal': (line.price_unit * line.quantity) - line.discount_fixed
-            }
-            price_unit = line.price_unit - line.discount_fixed
-            price_subtotal = (line.price_unit * line.quantity) - line.discount_fixed
-            line.update({
-                # 'price_unit': price_unit,
-                # 'discount_fixed': 0.0,
-                'price_subtotal': price_subtotal,
-            })
-        tax_grouped = super(AccountInvoice, self).get_taxes_values()
-        for line in vals.keys():
-            line.update(vals[line])
-        return tax_grouped
-
-
-class AccountInvoiceLine(models.Model):
-    _inherit = "account.invoice.line"
-
-    discount_fixed = fields.Float(
-        string="Desconto (fixo)",
-        digits=dp.get_precision('Product Price'),
-        help="Desconto Fixo Total.")
-
-    @api.onchange('discount')
-    def _onchange_discount(self):
-        if self.discount:
-            self.discount_fixed = 0.0
-
-    @api.onchange('discount_fixed')
-    def _onchange_discount_fixed(self):
-        if self.discount_fixed:
-            self.discount = 0.0
-
-    @api.multi
-    @api.constrains('discount', 'discount_fixed')
-    def _check_only_one_discount(self):
-        for line in self:
-            if line.discount and line.discount_fixed:
-                raise exceptions.ValidationError(
-                    _("Você só pode aplicar um tipo de desconto por linha."))
-
-    @api.one
-    @api.depends('price_unit', 'discount', 'invoice_line_tax_ids', 'quantity',
-                 'product_id', 'invoice_id.partner_id',
-                 'invoice_id.currency_id', 'invoice_id.company_id',
-                 'invoice_id.date_invoice', 'invoice_id.date',
-                 'discount_fixed')
-    def _compute_price(self):
-        if not self.discount_fixed:
-            return super(AccountInvoiceLine, self)._compute_price()
-        prev_price_unit = self.price_unit
-        prev_discount_fixed = self.discount_fixed
-        price_unit = self.price_unit - self.discount_fixed
-        # price_subtotal = (self.price_unit * self.quantity) - self.discount_fixed
-        self.update({
-            'price_unit': price_unit,
-            'discount_fixed': 0.0,
-            # 'price_subtotal': price_subtotal,
-        })
-        super(AccountInvoiceLine, self)._compute_price()
-        self.update({
-            'price_unit': prev_price_unit,
-            'discount_fixed': prev_discount_fixed,
-        })
